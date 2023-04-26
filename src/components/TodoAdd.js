@@ -1,8 +1,14 @@
+// モーダル表示するためにreact-modalをインポートする
 import Modal from "react-modal";
 
+// 期限を入力するためのライブラリとしてDatePickerをインポートする
 import DatePicker from "react-datepicker";
+
+// DatePickerで使用するカレンダーのCSSをインポートする
 import "react-datepicker/dist/react-datepicker.css"
 
+// バリデーションを行うためのreact-hook-formをインポートする
+// 現時点では使用しない
 import { useForm } from 'react-hook-form';
 
 import TodoCheckList from "./TodoAddCheckList";
@@ -43,13 +49,12 @@ const customStyles = {
     }
 };
 
-//任意のアプリを設定する　create-react-appなら#root
+// react-modalを使用するために宣言する必要あり
+// 任意のアプリを設定する　create-react-appなら#root
 Modal.setAppElement("#root");
 
 const TodoAdd = (props) => {
-
-    console.log(props.title);
-
+    
     // react-hook-formの初期設定(現状は使用しない)
     // const { register, handleSubmit, watch, formState: { errors } } = useForm();
 
@@ -57,16 +62,23 @@ const TodoAdd = (props) => {
         <div>
             {/* モーダル表示したい部分をModalタグで囲む */}
             <Modal
+
+                // モーダルをの表示処理isOpen
+                // 表示/非表示はStateのisShowModalで管理する
                 isOpen={props.isShowModal}
 
                 // モーダルが表示された後の処理
+                // モーダルが表示されている間、背景のスクロールを禁止する
                 onAfterOpen={() => document.getElementById("root").style.position = "fixed"}
 
                 // モーダルが非表示になった後の処理
+                // モーダルを閉じた後に画面スクロールできるようにする
                 onAfterClose={() => document.getElementById("root").style.position = "unset"}
 
                 // ↓を記述するとモーダル画面の外側をクリックした際にモーダルが閉じる
                 // onRequestClose={closeModal}
+                
+                // モーダルの中身/背景のデザインを設定する
                 style={customStyles}
             >
                 <div>
@@ -80,6 +92,7 @@ const TodoAdd = (props) => {
                     </div>
                     <p>メモ</p><textarea value={props.memo} onChange={(e) => props.setInputMemo(e.target.value)}/>
                     <p>チェックリスト</p>
+                        {/* チェックリストはコンポーネント化して別定義する */}
                         <TodoCheckList 
                             checkList={props.checkList} 
                             setCheckList={props.setCheckList}
@@ -90,6 +103,7 @@ const TodoAdd = (props) => {
                         />
                     <div>
                         <p>重要度</p>
+                        {/* map()メソッドを使用して重要度用の配列priorityItemsから要素を取り出す */}
                         {priorityItems.map((priorityItem) => (
                             <label key={priorityItem.id}>
                                 <input 
@@ -104,6 +118,7 @@ const TodoAdd = (props) => {
                     </div>
                     <div>
                         <p>難易度</p>
+                        {/* map()メソッドを使用して難易度用の配列difficultyItemsから要素を取り出す */}
                         <select defaultValue={props.difficulty} onChange={(e) => props.setDifficulty(e.target.value)}>
                             {diffcultyItems.map((diffcultyItem) => (
                                 <option key={diffcultyItem.id} value={diffcultyItem.value}>
@@ -114,7 +129,9 @@ const TodoAdd = (props) => {
                     </div>
                     <div>
                         <p>期限</p>
+                        {/* 期限はDatePickerを使用する */}
                         {/* minDateを設定することで選択できる日付を制限できる */}
+                        {/* minDate={new Date()}のように設定すると本日より前の日付は選択できないようになる */}
                         <DatePicker 
                             selected={props.inputDeadLine}
                             onChange={(date) => props.setInputDeadLine(date)}
@@ -122,6 +139,7 @@ const TodoAdd = (props) => {
                         />
                     </div>
                     <div>
+                        {/* changeFlgの値により表示するボタンを変更する */}
                         {props.changeFlg ? 
                             <button 
                                 type="submit"

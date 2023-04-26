@@ -11,14 +11,16 @@ import * as todoData from "../apis/todos";
 // useTodo()カスタムフックを外部で使用できるようexportする
 export const useTodo = () => {
 
-    // todoListは現在のTODOの状態
-    // setTodoListは現在のtodoListの状態を更新する関数
-    // todoListの初期値に空の配列をセット
+    // todoListは現在のTODOの状態、setTodoListは現在のtodoListの状態を更新する関数
     const [todoList, setTodoList] = useState([]);
 
-    // useEffect()を利用することでコンポーネントのマウント後、またはアンマウント後に処理を実行する
-    // useEffect()の第2引数には空の依存配列[]を設定しているため、コンポーネントの初回レンダリング時のみ
-    // 副作用関数が実行される
+    /* 
+    ##############################
+    TODO取得処理
+    ############################## 
+    */
+    // データの取得処理はuseEffectを利用してコンポーネントのマウント後に実装する
+    // useEffect()の第2引数には空の依存配列[]を設定しているため、コンポーネントの初回レンダリング時のみ実行
     useEffect(()=> {
         
         // モックサーバーからTODOデータを取得するgetAllTodoData()を実行する
@@ -39,20 +41,19 @@ export const useTodo = () => {
     */
     const toggleTodoItemStatus = (id, done) => {
 
-        // find()は配列から条件に合う値を見つけて最初にtrueになった
-        // 要素の値を返し、要素を見つけた時点で処理を停止する
-        // done(完了/未完了)の状態を反転させたいTODOをリストから見つける
+        // find()メソッドを利用し一致するTODOを取得する
+        // done(完了/未完了)の状態を反転させたいTODOをTODOリストから見つける
         const changeTodoItem = todoList.find((todoItem) => todoItem.id === id);
 
         // 対象のTODOの完了/未完了を反転させる
         const newTodoItem = {...changeTodoItem, done: !done };
 
-        // updataTodoData()を利用して指定されたidのTODOを更新したら、todoListの状態を更新する
+        // updataTodoData()を利用して対象のidを持つTODOを更新したら、todoListの状態を更新する
         // モックサーバーからレスポンスデータの取得に成功した場合、then()以降の処理を実行する
         // 引数updatedTodoItemにはモックサーバーから送り返された対象のidを持つTODOが設定される
         todoData.updateTodoData(id, newTodoItem).then((updatedTodoItem) => {
 
-            // done(完了/未完了)を変更したTODOに対して、map()を用いて１つひとつ処理を行う
+            // TODOリストからTODOをmap()メソッドを利用してひとつ１つ処理する
             const newTodoList = todoList.map((todoItem) => 
 
                 // idが異なる場合、todoListから取り出したtodoItemをそのまま返す
@@ -87,9 +88,12 @@ export const useTodo = () => {
             createDate: new Date()  // createDateに作成日時をセット
         };
 
-        // 対象のTODOでリストを更新する
+        // updataTodoData()を利用して対象のidを持つTODOを更新する
         todoData.updateTodoData(id, newTodoItem).then((updatedTodoItem) => {
 
+            // idが異なる場合、todoListから取り出したtodoItemをそのまま返す
+            // idが同じ場合、TODOの内容を更新したupdatedTodoItemを返し、
+            // 新しい配列newTodoListを作成する
             const newTodoList = todoList.map((todoItem) => 
                 todoItem.id !== updatedTodoItem.id ? todoItem : updatedTodoItem
             );
@@ -97,16 +101,6 @@ export const useTodo = () => {
             // 最新のtodoListに内容を更新する
             setTodoList(newTodoList);
         });
-    }
-
-    /* 
-    ##############################
-    TODO取得処理(idが一致したTODOリストを取得)
-    ############################## 
-    */
-    const getSingleTodosData = (id) => {
-        const singleTodoItem = todoList.find((todoItem) => todoItem.id === id);
-        return singleTodoItem;
     }
 
     /* 
@@ -120,20 +114,19 @@ export const useTodo = () => {
             title: title,           // titleにタイトルをセット
             memo: memo,             // memoにメモをセット
             checkList: checkList,   // checkListにチェックリストをセット
-            done: false,            // doneに完了/未完了をセット
+            done: false,            // doneに完了/未完了をセット（初期値は未完了(false)）
             priority: priority,     // priotiryに重要度をセット
             difficulty: difficulty, // difficultyに難易度をセット
             deadLine: deadLine,     // deadLineに期限をセット
             createDate: new Date()  // createDateに作成日時をセット
         };
 
-        // addTodoData()を利用してTODOを更新したら、続いてtodoListの状態も更新
-        // addTodoData()は新規TODOを追加する関数
-        // 引数newTodoItemにはモックサーバーから送り返された追加されたTODOが設定される
+        // addTodoData()を利用して新規TODOを追加する
+        // 引数addTodoItemにはモックサーバーから送り返された追加されたTODOが設定される
         todoData.addTodoData(newTodoItem).then((addTodo) => {
 
-            // todoListの状態(state)をaddTodoが追加された状態に更新する
-            setTodoList([addTodo, ...todoList]);
+            // todoListにaddTodoItemが追加された状態に更新する
+            setTodoList([addTodoItem, ...todoList]);
         });
     };
 
@@ -153,11 +146,11 @@ export const useTodo = () => {
                 todoItem.id !== deleteItemId
             );
 
-            // todoListの状態(state)を更新
+            // todoListの状態を更新する
             setTodoList(newTodoList);
         });
     };
 
     // 作成した関数と、現在のTODOリストの状態変数todoListを返す
-    return {todoList, setTodoList, getSingleTodosData, toggleTodoItemStatus, changeTodoItem, addTodoItem, deleteTodoItem};
+    return {todoList, setTodoList, toggleTodoItemStatus, changeTodoItem, addTodoItem, deleteTodoItem};
 };

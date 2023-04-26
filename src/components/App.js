@@ -42,21 +42,14 @@ const App = () => {
   // モーダルの表示の有無を設定する変数isShowModal、sShowModalを更新する関数setIsShowModal
   const [isShowModal, setIsShowModal] = useState(false);
 
-  // 追加と編集の変更を管理する変数changeFlg、changeFlgを更新する関数setChageFlg
-  // False = 追加、True = 編集
+  // 追加ボタンと編集ボタンの変更を管理する変数changeFlg、changeFlgを更新する関数setChageFlg
+  // False = 追加ボタン、True = 編集ボタン
   const [changeFlg, setChangeFlg] = useState(false);
 
   // 漢字変換・予測変換(サジェスト)選択中か否かの判定
   // 変換中か否かの判定を行い、変換を確定させるエンターに反応しないように振り分ける
   // true=変換中、false=変換中ではない
   const [composing, setComposition] = useState(false);
-
-  // チェックリストの現在の個数itemCount、itemCountを変更する関数setItemCountを定義する
-  const [itemCount, setItemCount] = useState(0);
-
-  // チェックリストを追加するinputの現在の状態変数inputValue、inputValueを更新する関数setInputValueを定義する
-  const [inputValue, setInputValue] = useState("");
-
 
   const startComposition = () => setComposition(true);
   const endComposition = () => setComposition(false);
@@ -66,6 +59,7 @@ const App = () => {
   未完了のTODOリストを表示する
   ############################## 
   */
+  // filter()メソッドを使用してTODOリスト内のdoneがfalseのTODOを取得する
   const imCompletedList = todoList.filter((todoItem) => {
     return !todoItem.done;
   });
@@ -75,6 +69,8 @@ const App = () => {
   完了済みのTODOリストを表示する
   ############################## 
   */
+  // filter()メソッドを使用してTODOリスト内のdoneがfalseのTODOを取得する
+  // 現在は使用していない 
   const completedList = todoList.filter((todoItem) => {
     return todoItem.done;
   });
@@ -86,7 +82,7 @@ const App = () => {
   */
   const handleAddTodoItem = () => {
 
-    // TODO入力フォームで入力された文字列を新しいTODOに登録する
+    // TODO入力フォームで入力された内容を新しいTODOに登録する
     addTodoItem(
       inputTitle, 
       inputMemo, 
@@ -95,6 +91,8 @@ const App = () => {
       difficulty, 
       inputDeadLine
     );
+
+    // 新たなTODOを登録後モーダル画面を閉じる
     closeModal();
   }
 
@@ -105,7 +103,7 @@ const App = () => {
   */
   const handleChangeTodoItem = () => {
     
-    // 変更されたTODOを登録する
+    // 選択されたTODOの内容を編集する
     changeTodoItem(
         inputId,
         inputTitle,
@@ -133,7 +131,7 @@ const App = () => {
 
   /* 
   ##############################
-  TODOリストの順番変更処理(実処理)
+  TODOリストの順番変更処理
   ############################## 
   */
   const reorder = (list, startIndex, endIndex) => {
@@ -145,8 +143,9 @@ const App = () => {
     // Array.splice()メソッドは、配列を操作するメソッド
     // 第1引数には操作を開始する配列のインデックス、第1引数のみの場合、指定したインデックス以降を取り除く
     // 第2引数はオプション、第1引数に3、第2引数に1を指定した場合、3番目の要素を配列から取り出す
-    // 第3引数はオブション、第3引数に設定した値が配列に追加される
     const [removed] = result.splice(startIndex, 1);
+
+    // 第3引数はオブション、第3引数に設定した値が配列に追加される
     result.splice(endIndex, 0, removed);
     return result;
   };
@@ -159,6 +158,8 @@ const App = () => {
   const closeModal = () => {
       setIsShowModal(false);
       setChangeFlg(!changeFlg);
+
+      // モーダルを閉じる際に入力された内容をリセットする
       reset();
   };
 
@@ -170,7 +171,7 @@ const App = () => {
   const onKeyDown = (e, key) => {
 
     switch (key) {
-      // 変換中でない時にEnterキーでinputを増やす
+      // エンターキーが押された際に以下の処理を実行する
       case "Enter":
         // input入力中にエンターを押すとデフォルトではsubmit(送信)になるため
         // e.preventDefault();で阻止する
@@ -189,7 +190,7 @@ const App = () => {
           inputDeadLine
         );
 
-        // 追加後にフォーカスを外す
+        // 追加後に入力フォームからフォーカスを外す
         document.getElementById("simpleAddInput").blur();
 
         // 入力内容をクリアする
@@ -208,6 +209,8 @@ const App = () => {
 
       <div>
         <TodoTitle title="TODO" as="h2" />
+
+        {/* TODOを作成するためのモーダルを表示する */}
         <button 
           onClick={() => {
             setIsShowModal(true); 
@@ -217,6 +220,8 @@ const App = () => {
           TODOの作成
         </button>
 
+        {/* onKeyDownでキーが押された際に処理を実行する */}
+        {/* onCompositionStart/onCompositionEndで入力が確定しているかどうかを判断する */}
         <div>
           <input 
             type="text"
@@ -224,13 +229,13 @@ const App = () => {
             placeholder="TODOの追加"
             value={inputTitle}
             onChange={(e) => setInputTitle(e.target.value)}
-            onKeyDown={(e) => onKeyDown(e, e.key, 1)}
+            onKeyDown={(e) => onKeyDown(e, e.key)}
             onCompositionStart={startComposition}
             onCompositionEnd={endComposition}
           />
         </div>
 
-        {/* TODOを追加するダイアログを表示する */}
+        {/* TODOを追加するモーダルを表示する */}
         {!isShowModal ? "" :
           <TodoAdd 
             title={inputTitle}
@@ -258,6 +263,7 @@ const App = () => {
             endComposition={endComposition}
           />
         }
+          {/* 登録されたTODOリストを表示する */}
           <TodoList 
             todoList={imCompletedList}
             isShowModal={isShowModal} 

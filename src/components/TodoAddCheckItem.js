@@ -1,7 +1,9 @@
 const TodoCheckItem = (props) => {
 
   return (
+    // チェックリストの各要素
     <>
+      {/* 現在時点でチェックボックスは機能していない */}
       <input type="checkbox"></input>
       <input
         type="text"

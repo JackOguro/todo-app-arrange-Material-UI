@@ -52,7 +52,7 @@ const TodoItem = (props) => {
     const handleCountDown = () => {
 
         const nowDate = new Date();                                     // 本日の日時を取得
-        const deadLineDate = new Date(props.todoItem.deadLine);               // 期限の日時を取得
+        const deadLineDate = new Date(props.todoItem.deadLine);         // 期限の日時を取得
         const diffDate = deadLineDate.getTime() - nowDate.getTime();    // 期限までの残り時間を取得
 
         // 期限が過ぎていない場合
@@ -64,7 +64,8 @@ const TodoItem = (props) => {
         }
     } 
 
-    // 初回レンダリング時のみ実行
+    // useEffectを使用してコンポーネントのマウント後に関数handleCountDownを実行する
+    // useEffectの第2引数を空の依存配列[]にすることで初回の画面レンダリング時に関数handleCountDownを実行する
     useEffect(handleCountDown, []);
 
     /* 
@@ -72,6 +73,7 @@ const TodoItem = (props) => {
     チェックボックス更新処理
     ############################## 
     */
+    // 現在時点で関数handleChangeCheckは機能していない
     const handleChangeCheck = () => {
 
     };
@@ -80,7 +82,7 @@ const TodoItem = (props) => {
         <div>
             <h3>{props.todoItem.title}</h3>
             <p>{props.todoItem.memo}</p>
-            {/* チェックリストも同様にmap()を利用してcheckListの要素を1つひとつ取り出す */}
+            {/* map()を利用してcheckListの要素を1つひとつ取り出す */}
             {props.todoItem.checkList.map((checkItem) => (
                 <label key={checkItem.id} style={{display: "block"}}>
                     <input type="checkbox" value={checkItem.chckItem} onChange={handleChangeCheck}/>
@@ -104,7 +106,7 @@ const TodoItem = (props) => {
             <button onClick={handleDeleteTodoItem}>削除</button>
 
             {/* ボタンをクリックすることで関数handleChangeTodoItemを実行する */}
-            {/* ボタンをクリックすることでTODOを編集する */}
+            {/* 関数handleChangeTodoItemが実行されるとモーダル画面が表示される */}
             <button onClick={handleChangeTodo}>編集</button>
             {props.isShowModal && <TodoAdd />}
         </div>

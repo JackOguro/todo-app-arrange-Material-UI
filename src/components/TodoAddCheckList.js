@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 
+// ドラッグ＆ドロップのライブラリreact-beautiful-dndをインポートする
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 import TodoCheckItem from "./TodoAddCheckItem";
@@ -14,11 +15,12 @@ const TodoCheckList = (props) => {
   // inputValueを更新する関数setInputValueを定義する
   const [inputValue, setInputValue] = useState("");
 
-    /* 
-    ##############################
-    チェックリストのCSS
-    ############################## 
-    */
+  /* 
+  ##############################
+  チェックリストのCSS
+  ############################## 
+  */
+  // 引数:isDraggingOver を使用してドラッグ中とそうでない時のCSSを変更することができる
   const getListStyle = (isDraggingOver) => ({
     background: 'white',
     /* isDraggingOverの型は真偽値、true=ドラッグ中、false=ドラッグ中ではない  */
@@ -42,6 +44,8 @@ const TodoCheckList = (props) => {
   チェックリスト追加処理(エンターキーによる操作)
   ############################## 
   */
+
+  // エンターキーで新たなチェックリストを追加できるようにする
   const onKeyDown = (e, key, number) => {
 
     switch (key) {
@@ -94,6 +98,7 @@ const TodoCheckList = (props) => {
     if (inputValue === "") return;
 
     // 既存の配列に新たにチェックリストを加える
+    // チェックリスト内要素の識別に使用されるidはstring(文字列)型でないと警告文が発生してしまう
     props.setCheckList([...props.checkList, ...[{id: `item-${itemCount}`, checkItem: inputValue}]]);
     
     // チェックリストを加えたのでカウントアップ
@@ -109,7 +114,11 @@ const TodoCheckList = (props) => {
   ############################## 
   */
   const updateCheckList = (index, e) => {
+
+    // slice()メソッドを使用してチェックリストのコピーを作成する
     const copyCheckList = props.checkList.slice();
+
+    // index を使用して対象のチェックリストの内容を書き換える
     copyCheckList[index].checkItem = e.target.value;
     props.setCheckList(copyCheckList);
   }
@@ -167,6 +176,7 @@ const TodoCheckList = (props) => {
             ))}
             {/* ここにドラッグ可能なアイテムを配置 */}
             {provided.placeholder} 
+            // 新しいチェックリストを追加するボタン/入力フォーム
             <button onClick={() => addCheckList()}>追加</button> 
             <input
               type="text" 
@@ -186,4 +196,3 @@ const TodoCheckList = (props) => {
 }
 
 export default TodoCheckList;
-
