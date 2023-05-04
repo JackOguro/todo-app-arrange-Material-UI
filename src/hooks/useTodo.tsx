@@ -3,6 +3,9 @@ import {useState, useEffect} from "react";
 // 一意なidを生成するulidをインポートする
 import {ulid} from "ulid";
 
+// TODOリスト、チェックリストの型をインポートする
+import { TodoListType, CheckListType } from "../types"
+
 // src/apis/todos.js内で宣言してexportした関数をimportする
 // getAllTodosData, addTodoData, deleteTodoData, updateTodoDataを
 // todoDataオブジェクトとしてまとめてimportする
@@ -11,8 +14,8 @@ import * as todoData from "../apis/todos";
 // useTodo()カスタムフックを外部で使用できるようexportする
 export const useTodo = () => {
 
-    // todoListは現在のTODOの状態、setTodoListは現在のtodoListの状態を更新する関数
-    const [todoList, setTodoList] = useState([]);
+    // todoListは現在のTODOリストの状態、setTodoListは現在のtodoListの状態を更新する関数
+    const [todoList, setTodoList] = useState<TodoListType>([]);
 
     /* 
     ##############################
@@ -23,14 +26,14 @@ export const useTodo = () => {
     // useEffect()の第2引数には空の依存配列[]を設定しているため、コンポーネントの初回レンダリング時のみ実行
     useEffect(()=> {
         
-        // モックサーバーからTODOデータを取得するgetAllTodoData()を実行する
+        // モックサーバーからTODOデータを取得するgetAllTodosData()を実行する
         // モックサーバーからレスポンスデータの取得に成功した場合、then()以降の処理を実行する
         // 引数todoにはモックサーバーから送り返されたresponse.dataが設定される
-        todoData.getAllTodosData().then((todo) => {
+        todoData.getAllTodosData().then((todoList) => {
             
             // モックサーバーからTODOデータを取得後、取得したTODOデータを反転させ、上から順に表示
             // todoListの状態(state)を更新する
-            setTodoList([...todo].reverse());
+            setTodoList([...todoList].reverse());
         });
     }, []);
 
@@ -39,7 +42,7 @@ export const useTodo = () => {
     完了/未完了変更処理
     ############################## 
     */
-    const toggleTodoItemStatus = (id, done) => {
+    const toggleTodoItemStatus = (id: string, done: boolean) => {
 
         // find()メソッドを利用し一致するTODOを取得する
         // done(完了/未完了)の状態を反転させたいTODOをTODOリストから見つける
@@ -72,7 +75,15 @@ export const useTodo = () => {
     TODO編集処理
     ############################## 
     */
-    const changeTodoItem = (id, title, memo, checkList, priority, difficulty, deadLine) => {
+    const changeTodoItem = (
+        id: string, 
+        title: string, 
+        memo: string, 
+        checkList: CheckListType, 
+        priority: string, 
+        difficulty: string, 
+        deadLine: Date
+        ) => {
 
         // 編集するTODOをidを用いてTODOリストから検索する
         const changeTodoItem = todoList.find((todoItem) => todoItem.id === id);
@@ -105,15 +116,25 @@ export const useTodo = () => {
 
     /* 
     ##############################
-    新規TODO取得処理
+    新規TODO追加処理
     ############################## 
     */
-    const addTodoItem = (title, memo, checkList, priority, difficulty, deadLine) => {
+    // 簡易入力ではtitle以外入力しないためundifinedを許容するために?をつける
+    const addTodoItem = (        
+        title: string, 
+        memo: string, 
+        checkList: CheckListType, 
+        priority: string, 
+        difficulty: string, 
+        deadLine: Date
+        ) => {
+
         const newTodoItem = {
             id: ulid(),             // idにulidで生成された一意な値をセット
             title: title,           // titleにタイトルをセット
             memo: memo,             // memoにメモをセット
             checkList: checkList,   // checkListにチェックリストをセット
+            packet: "todo",         // packetにtodoをセット(現状はtodo固定にしておく)
             done: false,            // doneに完了/未完了をセット（初期値は未完了(false)）
             priority: priority,     // priotiryに重要度をセット
             difficulty: difficulty, // difficultyに難易度をセット
@@ -123,7 +144,7 @@ export const useTodo = () => {
 
         // addTodoData()を利用して新規TODOを追加する
         // 引数addTodoItemにはモックサーバーから送り返された追加されたTODOが設定される
-        todoData.addTodoData(newTodoItem).then((addTodo) => {
+        todoData.addTodoData(newTodoItem).then((addTodoItem) => {
 
             // todoListにaddTodoItemが追加された状態に更新する
             setTodoList([addTodoItem, ...todoList]);
@@ -135,7 +156,7 @@ export const useTodo = () => {
     TODO削除処理
     ############################## 
     */
-    const deleteTodoItem = (id) => {
+    const deleteTodoItem = (id: string) => {
 
         // deleteTodoData()を利用して指定されたidのTODOを削除する
         // deleteTodoData()は一致したidのTODOを削除する関数

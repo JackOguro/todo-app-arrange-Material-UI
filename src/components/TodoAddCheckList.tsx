@@ -1,19 +1,31 @@
 import React, { useState } from 'react';
 
+// 一意なidを生成するulidをインポートする
+import {ulid} from "ulid";
+
 // ドラッグ＆ドロップのライブラリreact-beautiful-dndをインポートする
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
+// チェックリストの型をインポートする
+import { CheckListType } from "../types"
+
 import TodoCheckItem from "./TodoAddCheckItem";
 
-const TodoCheckList = (props) => {
+// propsで渡される値の型定義を行う
+type TodoCheckListProps = {
+  composing: boolean
+  reorder: (list: CheckListType, startIndex: number, endIndex: number) => any[]
+  checkList: CheckListType
+  handleSetCheckList: (checkList: CheckListType) => void
+  startComposition: () => void
+  endComposition: () => void
+}
 
-  // チェックリストの現在の個数itemCount
-  // itemCountを変更する関数setItemCountを定義する
-  const [itemCount, setItemCount] = useState(0);
+const TodoAddCheckList = (props: TodoCheckListProps) => {
 
   // チェックリストを追加するinputの現在の状態変数inputValue
   // inputValueを更新する関数setInputValueを定義する
-  const [inputValue, setInputValue] = useState("");
+  const [inputValue, setInputValue] = useState<string>("");
 
   /* 
   ##############################
@@ -21,7 +33,7 @@ const TodoCheckList = (props) => {
   ############################## 
   */
   // 引数:isDraggingOver を使用してドラッグ中とそうでない時のCSSを変更することができる
-  const getListStyle = (isDraggingOver) => ({
+  const getListStyle = (isDraggingOver: boolean) => ({
     background: 'white',
     /* isDraggingOverの型は真偽値、true=ドラッグ中、false=ドラッグ中ではない  */
     /* border: isDraggingOver ? 'solid 5px lightgray' : 'solid 5px white', */
@@ -33,7 +45,7 @@ const TodoCheckList = (props) => {
   チェックアイテムのCSS
   ############################## 
   */
-  const getItemStyle = (draggableStyle) => ({
+  const getItemStyle = (draggableStyle: any) => ({
     marginBottom: '0.5rem',
 
     ...draggableStyle
@@ -46,7 +58,7 @@ const TodoCheckList = (props) => {
   */
 
   // エンターキーで新たなチェックリストを追加できるようにする
-  const onKeyDown = (e, key, number) => {
+  const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, key: string) => {
 
     switch (key) {
       // 変換中でない時にEnterキーでinputを増やす
@@ -59,7 +71,7 @@ const TodoCheckList = (props) => {
         if (props.composing) break;
 
         // 変換中でないなら、addCheckList()メソッドでチェックリストを追加
-        if (number === 0) addCheckList();
+        addCheckList();
 
         break;
       default:
@@ -72,19 +84,19 @@ const TodoCheckList = (props) => {
   チェックリストの順番変更処理
   ############################## 
   */
-  const onDragEnd = (result) => {
+  const onDragEnd = (result: any) => {
 
     // ドロップ先がない場合、そのまま処理を抜ける
     if (!result.destination) return;
 
     // 配列の順番を入れ替える
-    let movedCheckItem = props.reorder(
+    const movedCheckItem = props.reorder(
       props.checkList,          // 順番を入れ替えたい配列
       result.source.index,      // 元の配列での位置
       result.destination.index  // 移動先の配列での位置
     );
 
-    props.setCheckList(movedCheckItem);
+    props.handleSetCheckList(movedCheckItem);
   };
 
   /* 
@@ -99,11 +111,8 @@ const TodoCheckList = (props) => {
 
     // 既存の配列に新たにチェックリストを加える
     // チェックリスト内要素の識別に使用されるidはstring(文字列)型でないと警告文が発生してしまう
-    props.setCheckList([...props.checkList, ...[{id: `item-${itemCount}`, checkItem: inputValue}]]);
+    props.handleSetCheckList([...props.checkList, ...[{id: ulid(), checkItem: inputValue, done: false}]]);
     
-    // チェックリストを加えたのでカウントアップ
-    setItemCount(itemCount + 1);
-
     // チェックリストに追加した後、入力内容をクリアする
     setInputValue("");
   }
@@ -113,14 +122,14 @@ const TodoCheckList = (props) => {
   チェックリスト内容変更処理
   ############################## 
   */
-  const updateCheckList = (index, e) => {
+  const updateCheckList = (index: number, e:React.ChangeEvent<HTMLInputElement>) => {
 
     // slice()メソッドを使用してチェックリストのコピーを作成する
     const copyCheckList = props.checkList.slice();
 
     // index を使用して対象のチェックリストの内容を書き換える
     copyCheckList[index].checkItem = e.target.value;
-    props.setCheckList(copyCheckList);
+    props.handleSetCheckList(copyCheckList);
   }
 
   /* 
@@ -128,7 +137,7 @@ const TodoCheckList = (props) => {
   チェックリスト削除処理
   ############################## 
   */
-  const deleteCheckList = (index) => {
+  const deleteCheckList = (index: number) => {
       
     // Array.from()メソッドは、反復可能オブジェクトや配列風オブジェクトから
     // シャローコピーされた、新しいArrayインスタンスを生成する
@@ -138,7 +147,7 @@ const TodoCheckList = (props) => {
     // 第2引数はオプション、第1引数に3、第2引数に2を指定した場合、3、4番目の要素を配列から取り出す
     result.splice(index, 1);
   
-    props.setCheckList(result);
+    props.handleSetCheckList(result);
   }
 
   return (
@@ -151,9 +160,10 @@ const TodoCheckList = (props) => {
           <div
             {...provided.droppableProps}
             ref={provided.innerRef}
-            style={getListStyle(snapshot.isDraggingOver)}
+            // Reactコンポーネント内でCSSを使用するとエラーが発生してしまうので as any をつける
+            style={getListStyle(snapshot.isDraggingOver) as any}
           >
-            {props.checkList.map((checkItem, index) => (
+            {props.checkList.map((checkItem, index: number) => (
               <Draggable key={checkItem.id} draggableId={checkItem.id} index={index}>
                 {/* Draggaleタグでsnapshotは以下のプロパティを持っている */}
                 {/* snapshot.isDragging:アイテムがドラッグ中かどうか */}
@@ -176,14 +186,14 @@ const TodoCheckList = (props) => {
             ))}
             {/* ここにドラッグ可能なアイテムを配置 */}
             {provided.placeholder} 
-            // 新しいチェックリストを追加するボタン/入力フォーム
+            {/* 新しいチェックリストを追加するボタン/入力フォーム */}
             <button onClick={() => addCheckList()}>追加</button> 
             <input
               type="text" 
               value={inputValue}
               placeholder="新しいチェックリストを追加"
               onChange={(e) => setInputValue(e.target.value)}
-              onKeyDown={(e) => onKeyDown(e, e.key, 0)}
+              onKeyDown={(e) => onKeyDown(e, e.key)}
               onCompositionStart={props.startComposition}
               onCompositionEnd={props.endComposition}
             >
@@ -195,4 +205,4 @@ const TodoCheckList = (props) => {
   );
 }
 
-export default TodoCheckList;
+export default TodoAddCheckList;

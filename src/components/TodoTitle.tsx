@@ -1,6 +1,13 @@
 // TodoTitleコンポーネントを作成する
 // 親コンポーネント(App)から受け取ったprops(as)の値により使用するタグを変更
-const TodoTitle = (props) => {
+
+// propsで渡される値の型定義を行う
+type TodoTitleProps = {
+  title: string
+  as : string
+}
+
+const TodoTitle = (props: TodoTitleProps) => {
 
     // asがh1ならば、タイトルはh1タグを使用
     if (props.as === "h1") {

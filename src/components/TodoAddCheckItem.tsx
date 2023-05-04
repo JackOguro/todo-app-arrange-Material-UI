@@ -1,4 +1,14 @@
-const TodoCheckItem = (props) => {
+// propsで渡される値の型定義を行う
+type TodoAddCheckItemProps = {
+  updateCheckList: (index: number, e: React.ChangeEvent<HTMLInputElement>) => void
+  deleteCheckList: (index: number) => void
+  checkItem : {
+    checkItem: string
+  }
+  index: number
+}
+
+const TodoCheckItem = (props: TodoAddCheckItemProps) => {
 
   return (
     // チェックリストの各要素
