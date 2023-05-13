@@ -16,6 +16,18 @@ import { CheckListType } from "../types"
 
 import TodoAddCheckList from "./TodoAddCheckList";
 
+// 入力フォームに適応するCSSファイル
+import "../css/common.css"
+
+import TodoAddModalStyle from "../css/TodoAddModalStyle.module.css"
+
+// Material UI
+// Layout
+import { Box } from "@mui/material";
+
+// Inputs
+import { Button, MenuItem, FormControl, Select, FormControlLabel, Radio } from "@mui/material";
+
 // propsで渡される値の型定義を行う
 type TodoAddProps = {
     id: string
@@ -143,10 +155,9 @@ const TodoAddModal = (props: TodoAddProps) => {
     }
 
     return (
-        <div>
+        <Box>
             {/* モーダル表示したい部分をModalタグで囲む */}
             <Modal
-
                 // モーダルをの表示処理isOpen
                 // 表示/非表示はStateのisShowModalで管理する
                 isOpen={props.isShowModal}
@@ -165,21 +176,26 @@ const TodoAddModal = (props: TodoAddProps) => {
                 // モーダルの中身/背景のデザインを設定する
                 style={customStyles}
             >
-                <div>
-                    <div>
-                        <p>タイトル*</p>
-                        <input  
-                            type="text" 
+                <Box>
+                    <Box className={TodoAddModalStyle.InputForm}>
+                        <h3 className={TodoAddModalStyle.title}>タイトル*</h3>
+                        <input
+                            className={`input ${TodoAddModalStyle.input}`}
+                            type="text"
                             defaultValue={props.title} 
                             onChange={(e) => props.handleSetTitle(e.target.value)}
                         />
-                    </div>
-                    <div>
-                        <p>メモ</p>
-                        <textarea value={props.memo} onChange={(e) => props.handleSetMemo(e.target.value)}/>
-                    </div>
-                    <div>
-                        <p>チェックリスト</p>
+                    </Box>
+                    <Box className={TodoAddModalStyle.InputForm}>
+                        <h3 className={TodoAddModalStyle.title}>メモ</h3>
+                        <textarea 
+                            className={`input ${TodoAddModalStyle.textarea}`}
+                            value={props.memo} 
+                            onChange={(e) => props.handleSetMemo(e.target.value)}
+                        />
+                    </Box>
+                    <Box className={TodoAddModalStyle.InputForm}>
+                        <h3 className={TodoAddModalStyle.title}>チェックリスト</h3>
                             {/* チェックリストはコンポーネント化して別定義する */}
                             <TodoAddCheckList 
                                 checkList={props.checkList} 
@@ -189,57 +205,66 @@ const TodoAddModal = (props: TodoAddProps) => {
                                 startComposition={props.startComposition}
                                 endComposition={props.endComposition}
                             />
-                    </div>
-                    <div>
-                        <p>重要度</p>
+                    </Box>
+                    <Box className={TodoAddModalStyle.InputForm}>
+                        <h3 className={TodoAddModalStyle.title}>重要度</h3>
                         {/* map()メソッドを使用して重要度用の配列priorityItemsから要素を取り出す */}
                         {priorityItems.map((priorityItem) => (
-                            <label key={priorityItem.id}>
-                                <input 
-                                    type="radio" 
-                                    value={priorityItem.value}
-                                    onChange={(e) => props.handleSetPriority(e.target.value)}
-                                    checked={props.priority === priorityItem.value}
-                                />
-                                {priorityItem.value}
-                            </label>
+                            <FormControlLabel
+                                key={priorityItem.id} 
+                                value={priorityItem.value}
+                                control={
+                                    <Radio
+                                        onChange={(e) => props.handleSetPriority(e.target.value)}
+                                        checked={props.priority === priorityItem.value} 
+                                    />
+                                }
+                                label={priorityItem.value}
+                            />
                         ))}
-                    </div>
-                    <div>
-                        <p>難易度</p>
+                    </Box>
+                    <Box className={TodoAddModalStyle.InputForm}>
+                        <h3 className={TodoAddModalStyle.title}>難易度</h3>
+                        <FormControl fullWidth size="small">
                         {/* map()メソッドを使用して難易度用の配列difficultyItemsから要素を取り出す */}
-                        <select defaultValue={props.difficulty} onChange={(e) => props.handleSetDifficulty(e.target.value)}>
-                            {diffcultyItems.map((diffcultyItem) => (
-                                <option key={diffcultyItem.id} value={diffcultyItem.value}>
-                                    {diffcultyItem.value}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                    <div>
-                        <p>期限</p>
+                            <Select
+                                className={TodoAddModalStyle.select} 
+                                defaultValue={props.difficulty} 
+                                onChange={(e) => props.handleSetDifficulty(e.target.value)}
+                            >
+                                {diffcultyItems.map((diffcultyItem) => (
+                                    <MenuItem key={diffcultyItem.id} value={diffcultyItem.value}>
+                                        {diffcultyItem.value}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                    </Box>
+                    <Box className={TodoAddModalStyle.InputForm}>
+                        <h3 className={TodoAddModalStyle.title}>期限</h3>
                         {/* 期限はDatePickerを使用する */}
                         {/* slectedをで初期値を設定できる */}
                         {/* minDateを設定することで選択できる日付を制限できる */}
                         {/* minDate={new Date()}のように設定すると本日より前の日付は選択できないようになる */}
                         <DatePicker 
+                            className={TodoAddModalStyle.input}
                             dateFormat="yyyy/MM/dd"
                             selected={props.deadLine}
                             onChange={(date) => props.handleSetDeadLine(date!)}
                             minDate={new Date()}
                         />
-                    </div>
-                    <div>
+                    </Box>
+                    <Box>
                         {/* changeFlgの値により表示するボタンを変更する */}
                         {props.changeFlg ? 
-                            <button type="submit" onClick={handleChangeTodoItem}>編集する</button> :
-                            <button type="submit" onClick={handleAddTodoItem}>作成する</button>
+                            <Button variant="contained" type="submit" onClick={handleChangeTodoItem}>編集する</Button> :
+                            <Button variant="contained" type="submit" onClick={handleAddTodoItem}>作成する</Button>
                         }
-                        <button onClick={props.closeModal}>キャンセル</button>
-                    </div>
-                </div>
+                        <Button className={TodoAddModalStyle.button} variant="contained" onClick={props.closeModal}>キャンセル</Button>
+                    </Box>
+                </Box>
             </Modal>
-        </div>
+        </Box>
     );
 }
 

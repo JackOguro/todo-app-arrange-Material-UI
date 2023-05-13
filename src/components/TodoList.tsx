@@ -19,6 +19,7 @@ type TodoListProps = {
     isShowModal: boolean
     changeFlg: boolean
     composing: boolean
+    handleSetTodoList: (todoList: TodoListType) => void
     handleSetId: (id: string) => void
     handleSetTitle: (title: string) => void
     handleSetMemo: (memo: string) => void 
@@ -71,6 +72,9 @@ const TodoList = (props: TodoListProps) => {
         result.source.index,      // 元の配列での位置
         result.destination.index  // 移動先の配列での位置
         );
+
+        // ドラッグ＆ドロップで表示順を変更したTODOを設定(サーバーに保存されない)
+        props.handleSetTodoList(movedTodoItem);
     };
 
     /* 
@@ -79,10 +83,10 @@ const TodoList = (props: TodoListProps) => {
     ############################## 
     */
     const getListStyle = (isDraggingOver: boolean) => ({
-        background: 'white',
-        /* isDraggingOverの型は真偽値、true=ドラッグ中、false=ドラッグ中ではない  */
-        /* border: isDraggingOver ? 'solid 5px lightgray' : 'solid 5px white', */
-        textAlign: 'left',
+        // background: 'white',
+        // isDraggingOverの型は真偽値、true=ドラッグ中、false=ドラッグ中ではない  */
+        // border: isDraggingOver ? 'solid 5px lightgray' : 'solid 5px white', */
+        // textAlign: 'left',
     });
     
     /* 
@@ -91,8 +95,10 @@ const TodoList = (props: TodoListProps) => {
     ############################## 
     */
     const getItemStyle = (draggableStyle: any) => ({
-        marginBottom: '0.5rem',
-
+        backgroundColor: 'white',
+        padding: '1px',
+        margin: '2.5px',
+        borderRadius: "5px",
         ...draggableStyle
     });
 

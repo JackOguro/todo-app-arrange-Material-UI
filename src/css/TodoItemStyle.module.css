@@ -1,0 +1,95 @@
+/* TODOアイテム全体 */
+.TodoItem {
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+}
+
+/* TODOアイテム全体(ホバー時) */
+.TodoItem:hover {
+    border: 1px solid #2665c0;
+}
+
+/*　TODOアイテム左側(チェックボックス)　*/
+.TodoItemLeft {
+    border-radius: 5px 0 0 5px;
+    width: 15%;
+    background-color: #50b5e9;
+}
+
+/* チェックボックス */
+.checkbox svg {
+    width: 100%;
+    height: 100%;
+}
+
+/*　TODOアイテム右側(内容)　*/
+.TodoItemRight {
+    position: relative;
+    width: 85%;
+    padding: 10px;
+}
+
+/* メニューボタン */
+.menu {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+/* TODOアイテムタイトル */
+.todoItemTitle {
+    color: #7a787e;
+    font-size: 18px;
+}
+
+/* TODOアイテムメモ */
+.todoItemMemo {
+    font-size: 12px;
+    color: #BBB9C1;
+    margin-top: 5%;
+}
+
+/* TODOアイテムチェックリスト */
+.list {
+    padding: unset !important;
+    margin: 2.5% 0 !important;
+}
+
+/* TODOアイテムチェックリスト(要素) */
+.listText {
+    flex: none !important;
+}
+
+/* TODOアイテムチェックリスト(テキスト) */
+.listText span {
+    font-size: 14px;
+    color: #7a787e;
+}
+
+/* TODOチェックリストアイコン */
+.listIcon {
+    width: 5% !important;
+    height: 5% !important; 
+    padding-right: 2.5%;
+}
+
+/* TODOチェックリストトグルアイコン */
+.listToggleIcon {
+    width: 7.5%;
+    height: 7.5%;
+}
+
+/* TODOチェックアイテム */
+.checkItem {
+    margin: -2.5% 0;
+    font-size: 14px;
+    color: #7a787e;
+}
+
+/* TODOアイテム期限 */
+.deadLine {
+    font-size: 14px;
+    color: #7a787e;
+}

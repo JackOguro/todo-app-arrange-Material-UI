@@ -1,0 +1,29 @@
+/* テキスト入力フォーム(モーダル画面) */
+.input {
+    padding: 2.5%;
+}
+
+/* テキスト入力フォーム(メモ) */
+.textarea {
+    height: 100px
+}
+
+/* テキストエリア入力フォーム(focus-visible) */
+.textarea:focus-visible {
+    outline: none;
+}
+
+/* 各入力フォーム */
+.InputForm {
+    margin-bottom: 5%;
+}
+
+/* 入力フォームタイトル */
+.title {
+    margin-bottom: 2.5%;
+}
+
+/* ボタン */
+.button {
+    margin-left: 5%;
+}

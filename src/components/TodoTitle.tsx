@@ -1,5 +1,5 @@
-// TodoTitleコンポーネントを作成する
-// 親コンポーネント(App)から受け取ったprops(as)の値により使用するタグを変更
+// cssファイルをインポートする
+import TodoTitleStyle from "../css/TodoTitleStyle.module.css"
 
 // propsで渡される値の型定義を行う
 type TodoTitleProps = {
@@ -11,7 +11,7 @@ const TodoTitle = (props: TodoTitleProps) => {
 
     // asがh1ならば、タイトルはh1タグを使用
     if (props.as === "h1") {
-      return <h1>{props.title}</h1>
+      return <h1 className={TodoTitleStyle.title}>{props.title}</h1>
   
     // asがh2ならば、タイトルはh2タグを使用
     } else if (props.as === "h2") {

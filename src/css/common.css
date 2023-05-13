@@ -1,0 +1,56 @@
+/* 入力フォーム */
+.input {
+    border: none;
+    border-radius: 5px;
+    background-color: rgba(0, 0, 0, 0.3);
+    width: 95%;
+    padding: 4% 2.5%;
+    margin: 1.5% 0;
+}
+
+/* 入力フォーム(hover) */
+.input:hover {
+    animation-name: fadeInInput;
+    animation-duration: .3s;
+    animation-timing-function: ease-in-out;
+    animation-fill-mode: forwards; 
+}
+
+/* 入力フォーム(focus) */
+.input:focus {
+    background-color: rgba(0, 0, 0, 0.1); 
+}
+
+/* 入力フォーム(focus-visible) */
+.input:focus-visible {
+    outline: none;
+}
+
+/* フェードインアニメーション */
+.fadeIn {
+    opacity: 0;
+    animation-name: fadeIn; /* アニメーション名を指定 */
+    animation-duration: .5s;   /* アニメーションの変化時間 */
+    animation-timing-function: ease-in-out; /* アニメーションの進行具合を操作→開始時と終了時は、かなり緩やかに変化 */
+    animation-fill-mode: forwards;  /* アニメーションの開始と終了時の状態を指定 forwards→元の状態に戻らずアニメーション最後の状態を維持 */
+}
+
+/* フェードインアニメーション */
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+/* フェードインアニメーション(入力フォーム) */
+@keyframes fadeInInput {
+    0% {
+        background-color: rgba(0, 0, 0, 0.3);
+    }
+    100% {
+        background-color: rgba(0, 0, 0, 0.1);
+    }
+}

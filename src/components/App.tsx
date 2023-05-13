@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useTodo } from "../hooks/useTodo";
 
 // チェックリストの型をインポートする
-import { CheckListType } from "../types"
+import { CheckListType, TodoListType } from "../types"
 
 // TodoTitleコンポーネントをインポートする
 import TodoTitle from "./TodoTitle";
@@ -16,12 +16,25 @@ import TodoList from "./TodoList";
 // TodoAddコンポーネントをインポートする
 import TodoAdd from "./TodoAddModal";
 
+// CSSファイルをインポートする
+import AppStyle from "../css/AppStyle.module.css";
+
+// Material UIのコンポーネントをインポートする
+// Layout
+import { Container, Box } from "@mui/material";
+
+// Inputs
+import { Button } from "@mui/material";
+
+// Material Icons
+import AddRoundedIcon from '@mui/icons-material/AddRounded';
+
 const App = () => {
 
   // useTodo()カスタムフックで作成したのを利用する
   // カスタムフックで定義したコンポーネントはApp.tsxで定義し、propsを用いて下の階層に渡す
   // 下の階層で定義すると親コンポーネント(App.tsx)がレンダリングされず処理は実行されているが画面は更新されない
-  const {todoList, addTodoItem, toggleTodoItemStatus, changeTodoItem, deleteTodoItem} = useTodo();
+  const {todoList, setTodoList, addTodoItem, toggleTodoItemStatus, changeTodoItem, deleteTodoItem} = useTodo();
 
   // 選択されたTODOリストのinputId、idを更新する関数setInputId
   const [id, setId] = useState<string>("");
@@ -61,6 +74,10 @@ const App = () => {
   各State更新用の関数
   ############################## 
   */
+
+  // TODOリスト更新用の関数handleSetTodoList
+  const handleSetTodoList = (todoList: TodoListType) => setTodoList(todoList);
+
   // id確認用の関数handleSetId
   const handleSetId = (id: string) => setId(id);
 
@@ -171,7 +188,7 @@ const App = () => {
   TODOリスト簡易追加処理(エンターキーによる操作)
   ############################## 
   */
-  const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, key: string) => {
+  const onKeyDown = (e: React.KeyboardEvent<HTMLDivElement>, key: string) => {
 
     switch (key) {
     // エンターキーが押された際に以下の処理を実行する
@@ -207,100 +224,104 @@ const App = () => {
 
   return (
     <>
-      <div>
+      <Box>
         {/* TODOを作成するためのモーダルを表示する */}
-        <button 
+        <Button
+          className={AppStyle.button}
+          variant="contained"
           onClick={() => {
           setIsShowModal(true); 
           setChangeFlg(false);
         }}
         >
+          <AddRoundedIcon sx={{fontSize: 17.5 }}/>
           TODOの作成
-        </button>
-      </div>
+        </Button>
+      </Box>
 
-      {/* onKeyDownでキーが押された際に処理を実行する */}
-      {/* onCompositionStart/onCompositionEndで入力が確定しているかどうかを判断する */}
-      <div>
-        <input 
-          type="text"
-          id="simpleAddInput" 
-          placeholder="TODOの追加"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          onKeyDown={(e) => onKeyDown(e, e.key)}
-          onCompositionStart={startComposition}
-          onCompositionEnd={endComposition}
-        />
-      </div>
+      <Container maxWidth="xs">
+        <TodoTitle title="TODO" as="h1" />
+        <Box className={AppStyle.TodoList}> 
+          {/* onKeyDownでキーが押された際に処理を実行する */}
+          {/* onCompositionStart/onCompositionEndで入力が確定しているかどうかを判断する */}
+          <input
+            className="input"
+            type="text"
+            id="simpleAddInput" 
+            placeholder="TODOの追加"    
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            onKeyDown={(e) => onKeyDown(e, e.key)}
+            onCompositionStart={startComposition}
+            onCompositionEnd={endComposition}
+          />
 
-      {/* 現在は使わないのでコメントアウト中 */}
-      {/* <button>新しいパケットの追加</button> */}
+          {/* 現在は使わないのでコメントアウト中 */}
+          {/* <button>新しいパケットの追加</button> */}
 
-      <div>
-        <TodoTitle title="TODO" as="h2" />
+            {/* TODOを追加するモーダルを表示する */}
+            <TodoAdd 
+              id={id}
+              title={title}
+              memo={memo}
+              checkList={checkList}
+              priority={priority}
+              difficulty={difficulty}
+              deadLine={deadLine}
+              isShowModal={isShowModal}
+              changeFlg={changeFlg}
+              composing={composing}
+              handleSetId={handleSetId}
+              handleSetTitle={handleSetTitle}
+              handleSetMemo={handleSetMemo}
+              handleSetCheckList={handleSetCheckList}
+              handleSetDifficulty={handleSetDifficulty}
+              handleSetPriority={handleSetPriority}
+              handleSetDeadLine={handleSetDeadLine}
+              addTodoItem={addTodoItem} 
+              toggleTodoItemStatus={toggleTodoItemStatus}
+              changeTodoItem={changeTodoItem}
+              deleteTodoItem={deleteTodoItem}
+              closeModal={closeModal}
+              startComposition={startComposition}
+              endComposition={endComposition}
+              reorder={reorder}
+            />
 
-        {/* TODOを追加するモーダルを表示する */}
-        <TodoAdd 
-          id={id}
-          title={title}
-          memo={memo}
-          checkList={checkList}
-          priority={priority}
-          difficulty={difficulty}
-          deadLine={deadLine}
-          isShowModal={isShowModal}
-          changeFlg={changeFlg}
-          composing={composing}
-          handleSetId={handleSetId}
-          handleSetTitle={handleSetTitle}
-          handleSetMemo={handleSetMemo}
-          handleSetCheckList={handleSetCheckList}
-          handleSetDifficulty={handleSetDifficulty}
-          handleSetPriority={handleSetPriority}
-          handleSetDeadLine={handleSetDeadLine}
-          addTodoItem={addTodoItem} 
-          toggleTodoItemStatus={toggleTodoItemStatus}
-          changeTodoItem={changeTodoItem}
-          deleteTodoItem={deleteTodoItem}
-          closeModal={closeModal}
-          startComposition={startComposition}
-          endComposition={endComposition}
-          reorder={reorder}
-        />
-
-        {/* 登録されたTODOリストを表示する */}
-        <TodoList 
-          todoList={inCompletedList}
-          id={id}
-          title={title}
-          memo={memo}
-          checkList={checkList}
-          priority={priority}
-          difficulty={difficulty}
-          deadLine={deadLine}
-          isShowModal={isShowModal}
-          changeFlg={changeFlg}
-          composing={composing}
-          handleSetId={handleSetId}
-          handleSetTitle={handleSetTitle}
-          handleSetMemo={handleSetMemo}
-          handleSetCheckList={handleSetCheckList}
-          handleSetDifficulty={handleSetDifficulty}
-          handleSetPriority={handleSetPriority}
-          handleSetDeadLine={handleSetDeadLine}
-          handleSetIsShowModal={handleSetIsShowModal}
-          handleSetChangeFlg={handleSetChangeFlg}
-          addTodoItem={addTodoItem} 
-          toggleTodoItemStatus={toggleTodoItemStatus} 
-          changeTodoItem={changeTodoItem}
-          deleteTodoItem={deleteTodoItem}
-          closeModal={closeModal}
-          startComposition={startComposition}
-          endComposition={endComposition}
-          reorder={reorder}
-        />
-      </div>
+          {/* 登録されたTODOリストを表示する */}
+          <TodoList 
+            todoList={inCompletedList}
+            id={id}
+            title={title}
+            memo={memo}
+            checkList={checkList}
+            priority={priority}
+            difficulty={difficulty}
+            deadLine={deadLine}
+            isShowModal={isShowModal}
+            changeFlg={changeFlg}
+            composing={composing}
+            handleSetTodoList={handleSetTodoList}
+            handleSetId={handleSetId}
+            handleSetTitle={handleSetTitle}
+            handleSetMemo={handleSetMemo}
+            handleSetCheckList={handleSetCheckList}
+            handleSetDifficulty={handleSetDifficulty}
+            handleSetPriority={handleSetPriority}
+            handleSetDeadLine={handleSetDeadLine}
+            handleSetIsShowModal={handleSetIsShowModal}
+            handleSetChangeFlg={handleSetChangeFlg}
+            addTodoItem={addTodoItem} 
+            toggleTodoItemStatus={toggleTodoItemStatus} 
+            changeTodoItem={changeTodoItem}
+            deleteTodoItem={deleteTodoItem}
+            closeModal={closeModal}
+            startComposition={startComposition}
+            endComposition={endComposition}
+            reorder={reorder}
+          />
+        </Box>
+      </Container>
     </>
   )
 }

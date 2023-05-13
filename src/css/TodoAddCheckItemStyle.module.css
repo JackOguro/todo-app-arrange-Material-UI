@@ -1,0 +1,26 @@
+/* チェックリスト */
+.input {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.42);
+}
+
+/* チェックリスト(ホバー時) */
+.input::before {
+    display: none;
+}
+
+/* チェックリスト(クリック時) */
+.input::after {
+    display:none;
+}
+
+/* ドラッグ＆ドロップ用アイコン */
+.icon {
+    position: absolute;
+    top: 15%;
+    left: -5%;
+}
+
+/* ドラッグ＆ドロップ用アイコン(ホバー時) */
+.icon:hover {
+    cursor: pointer;
+}

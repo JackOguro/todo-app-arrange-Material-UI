@@ -1,0 +1,11 @@
+/* TODOリスト全体 */
+.TodoList {
+    padding: 2.5%;
+    border-radius: 5px;
+    background-color: #edecee;
+}
+
+/* TODOの作成ボタン */
+.button {
+    margin: 2.5%;
+}

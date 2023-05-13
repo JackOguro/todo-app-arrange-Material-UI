@@ -11,6 +11,16 @@ import { CheckListType } from "../types"
 
 import TodoCheckItem from "./TodoAddCheckItem";
 
+// Material UI
+// Layout
+import { Box } from "@mui/material";
+
+// Inputs
+import { IconButton, Input, InputAdornment } from "@mui/material";
+
+// Material icons
+import AddRoundedIcon from '@mui/icons-material/AddRounded';
+
 // propsで渡される値の型定義を行う
 type TodoCheckListProps = {
   composing: boolean
@@ -58,7 +68,7 @@ const TodoAddCheckList = (props: TodoCheckListProps) => {
   */
 
   // エンターキーで新たなチェックリストを追加できるようにする
-  const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, key: string) => {
+  const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>, key: string) => {
 
     switch (key) {
       // 変換中でない時にEnterキーでinputを増やす
@@ -122,7 +132,7 @@ const TodoAddCheckList = (props: TodoCheckListProps) => {
   チェックリスト内容変更処理
   ############################## 
   */
-  const updateCheckList = (index: number, e:React.ChangeEvent<HTMLInputElement>) => {
+  const updateCheckList = (index: number, e:React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
 
     // slice()メソッドを使用してチェックリストのコピーを作成する
     const copyCheckList = props.checkList.slice();
@@ -157,7 +167,7 @@ const TodoAddCheckList = (props: TodoCheckListProps) => {
         {/* Droppableタグでsnapshotは以下のプロパティを持っている */}
         {/* snapshot.isDraggingOver:リスト上でアイテムがドラッグ中かどうか */}
         {(provided, snapshot) => (
-          <div
+          <Box
             {...provided.droppableProps}
             ref={provided.innerRef}
             // Reactコンポーネント内でCSSを使用するとエラーが発生してしまうので as any をつける
@@ -168,7 +178,7 @@ const TodoAddCheckList = (props: TodoCheckListProps) => {
                 {/* Draggaleタグでsnapshotは以下のプロパティを持っている */}
                 {/* snapshot.isDragging:アイテムがドラッグ中かどうか */}
                 {(provided) => (
-                  <div
+                  <Box
                     ref={provided.innerRef}
                     {...provided.draggableProps}
                     {...provided.dragHandleProps}
@@ -180,25 +190,31 @@ const TodoAddCheckList = (props: TodoCheckListProps) => {
                       updateCheckList={updateCheckList}
                       deleteCheckList={deleteCheckList}
                     />
-                  </div>
+                  </Box>
                 )}
               </Draggable>
             ))}
             {/* ここにドラッグ可能なアイテムを配置 */}
             {provided.placeholder} 
             {/* 新しいチェックリストを追加するボタン/入力フォーム */}
-            <button onClick={() => addCheckList()}>追加</button> 
-            <input
+            <Input
               type="text" 
               value={inputValue}
               placeholder="新しいチェックリストを追加"
+              fullWidth
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={(e) => onKeyDown(e, e.key)}
               onCompositionStart={props.startComposition}
               onCompositionEnd={props.endComposition}
-            >
-            </input>
-          </div>
+              startAdornment={
+                <InputAdornment position='start'>
+                  <IconButton onClick={() => addCheckList()}>
+                    <AddRoundedIcon />
+                  </IconButton>
+                </InputAdornment>
+              }
+            />
+          </Box>
         )}
       </Droppable>
     </DragDropContext>
